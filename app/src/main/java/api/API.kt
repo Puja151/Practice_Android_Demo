@@ -1,5 +1,8 @@
 package api
 
+import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
+
 // A networking API used within the app.
 //
 // Implement the API using retrofit, ktor or any networking library of your choice
@@ -12,47 +15,17 @@ package api
 //
 interface API {
 
-    // Execute asynchronous fetch of users list and callback with `success` or `failure` accordingly
-    // Caller can choose to exclude a given user by an ID in `excludingUserWithID` parameter.
-    // In this case, filter the given ID from the response
-    //
-    // Note: The task requires result of this fetch to always be returned in reverse order
-    //       of the raw JSON response.
-    //
-    fun fetchUsersList(
-        excludingUserWithID: String? = null,
-        success: (UsersList) -> Unit,
-        failure: (FetchError) -> Unit
-    )
+    fun fetchUsersList(excludingUserWithID: Int =0)
+
+    fun getRetrofitInstance(): Retrofit {
+        return Retrofit.Builder()
+            .addConverterFactory(GsonConverterFactory.create())
+            .baseUrl(usersListURL)
+            .build()
+    }
 
     companion object {
-
-        const val usersListURL = "https://jsonplaceholder.typicode.com/users"
-
-        // TODO: Instantiate an API object as follows to use within the app
-
-        /*
-        fun create() : API {
-            return RetrofitAPI(usersListURL = usersListURL)
-        }
-        */
-
+        const val usersListURL = "https://jsonplaceholder.typicode.com/"
     }
 
 }
-
-// TODO: Create a data type representing users-list (according to expected JSON response)
-// (See the JSON response at: https://jsonplaceholder.typicode.com/users)
-//
-// Make sure to limit the data inside this data-type to whats required in the assignment.
-// Do not include any other information, e.g. phone number, zipcode... if its not required
-//
-typealias UsersList = Any
-
-// TODO (Bonus): Create a more specific error type.
-// This can help identify the nature of a particular failure case.
-// e.g. network timeout, badly formatted request or failing to decode/deserialize
-// a response could cause failure in a network request.
-//
-typealias FetchError = Any
-
