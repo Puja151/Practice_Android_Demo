@@ -1,14 +1,18 @@
 package model
 
-import com.google.gson.annotations.Expose
-import com.google.gson.annotations.SerializedName
-
 data class UserList(
-    @SerializedName("id")
-    @Expose
-    var id : Int ?= null,
-
-    @SerializedName("name")
-    @Expose
-    var name: String ?= null
+    val id : String,
+    val name: String,
+    val email: String,
+    val address: UserAddress,
+    val company: CompanyDetails
 )
+
+data class UserAddress(
+    val city: String,
+)
+
+data class CompanyDetails(
+    val name: String,
+)
+
