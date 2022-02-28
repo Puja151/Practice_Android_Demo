@@ -2,6 +2,7 @@ package api
 
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.runBlocking
 import model.UserList
 import okhttp3.OkHttpClient
 import retrofit2.Response
@@ -16,7 +17,7 @@ import retrofit2.http.GET
 //
 class RetrofitAPI(private val usersListBaseURL: String) : API {
 
-    private var retrofitAPI : RetrofitInterface
+    private var retrofitAPI: RetrofitInterface
 
     init {
 
@@ -36,11 +37,17 @@ class RetrofitAPI(private val usersListBaseURL: String) : API {
         failure: FetchError<String>
     ) {
         print("Fetch users list from $usersListBaseURL")
-
-        GlobalScope.launch {
+        val userDisplayList = ArrayList<UserList>()
+        runBlocking {
             val response = retrofitAPI.fetchUserList()
             if (response.isSuccessful) {
-                success(response.body()!!)
+                response.body()?.let {
+                    for (i in it.iterator()) {
+                        userDisplayList.add(i)
+                    }
+                    excludingUserWithID?.let { it1 -> userDisplayList.removeAt(it1.toInt()) }
+                    success(userDisplayList)
+                }
             } else {
                 failure(response.message())
             }
